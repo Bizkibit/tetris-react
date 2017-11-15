@@ -1,0 +1,22 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.empty {
+  width: 5vmin;
+  height: 5vmin;
+  border: solid 2px black;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#Board  {
+  margin: 20vmin auto ;
+  display: flex;
+  justify-content: space-around;
+  height: 75vmin;
+  width: 50vmin;
+  flex-wrap: wrap;
+}
