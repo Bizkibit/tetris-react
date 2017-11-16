@@ -4,7 +4,17 @@ body {
   font-family: sans-serif;
 }
 
-.empty {
+#Board  {
+  margin: 10vmin auto ;
+  display: flex;
+  justify-content: space-around;
+  height: 75vmin;
+  width: 50vmin;
+  flex-wrap: wrap;
+  /*border: solid 0.1px black;*/
+}
+
+.square {
   width: 5vmin;
   height: 5vmin;
   border: solid 2px black;
@@ -12,11 +22,7 @@ body {
   text-align: center;
 }
 
-#Board  {
-  margin: 20vmin auto ;
-  display: flex;
-  justify-content: space-around;
-  height: 75vmin;
-  width: 50vmin;
-  flex-wrap: wrap;
+.full {
+  background-color: green;
+  /*border: solid 0.1px black;*/
 }
