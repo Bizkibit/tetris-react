@@ -15,7 +15,7 @@ class Board extends Component {
     );
   }
 
-  renderShapes()  {
+  renderNodes()  {
     let {squares} = this.props;
     return squares.map((k,i) => k?this.renderSquare(i, k):this.renderSquare(i))
   }
@@ -23,7 +23,7 @@ class Board extends Component {
   render()  {
     return (
     <div id="Board">
-      {this.renderShapes()}
+      {this.renderNodes()}
     </div>
     )
   }
@@ -37,7 +37,8 @@ class Game extends Component  {
         squares: new Array(150).fill(null)
       }],
       currentShape: Object.values(shapes)[Math.floor(Math.random()*6)],
-      currentPosition: 5
+      currentPosition: 5,
+      speed: 50
     }
   }
 
@@ -55,14 +56,14 @@ class Game extends Component  {
   renderShapes(num)  {
     let {history, currentShape} = this.state;
     let squares = history[history.length-1].squares.slice();
-    return squares.map((k,i) => k = (currentShape(num).includes(i)) ? "green" : null);
+    return squares.map((k,i) => (currentShape(num).includes(i)) ? "green" : (squares[i]!=="grey") ? null : "grey");
   }
 
   moveShape() {
     let {currentShape, currentPosition, history} = this.state;
     let squares = history[history.length-1].squares.slice();
-    let [a, b, c] = bottomNodes(currentPosition);
-    if (!(squares[a] && squares[b] && squares[c]) && currentPosition<139) {
+    let [a, b, c] = bottomNodes(currentShape, currentPosition);
+    if (((squares[a] === null && squares[b] ===null && squares[c]===null) || (squares[a] === "grey" && squares[b] === "grey" && squares[c] === "grey")) && currentPosition<139) {
       let newPosition = currentPosition+10;
       squares = this.renderShapes(newPosition);
       this.setState({
@@ -70,13 +71,18 @@ class Game extends Component  {
         currentPosition: newPosition
       })
     } else {
-
+      currentShape(currentPosition).map((k) => squares[k]="grey");
+      this.setState({
+        history : history.concat([{squares:squares}]),
+        currentPosition: 5,
+        currentShape: Object.values(shapes)[Math.floor(Math.random()*6)]
+      })
     }
   }
 
   componentDidMount() {
     this.getShape();
-    setInterval(() => this.moveShape(), 300)
+    setInterval(() => this.moveShape(), this.state.speed)
   }
 
   // componentWillReceiveProps()  {
@@ -100,7 +106,7 @@ class Game extends Component  {
   }
 
   render()  {
-    let squares = this.state.history[this.state.history.length-1].squares;
+    let {squares} = this.state.history[this.state.history.length-1];
     return (
       <Board squares={squares}/>
     )
@@ -119,9 +125,22 @@ function rotate90(arr) {
   return result.map((k, i) => k = k?(parseInt(i/3)*10+((i%3)+first)):null )
 }
 
-function bottomNodes(i) {
+function bottomNodes(func, i) {
+  // let nodes = func(i);
+  // let arr = [nodes[6], nodes[3], nodes[0]];
+  // let arr2 = [nodes[7], nodes[4], nodes[1]]
+  // let arr2 = [nodes[8], nodes[5], nodes[2]];
+  // let node1 = arr.findIndex(bottom)===-1?null:arr.findIndex(bottom)===2?;
+  // let node2 = arr2.findIndex(bottom);
+  // let node3 = arr3.findIndex(bottom);
+
   return [i+19, i+20, i+21]
 }
+
+function bottom(element) {
+  return element !== null
+}
+
 
 // (function movePieceTest()  {
 //   let kir;

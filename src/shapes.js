@@ -15,10 +15,10 @@ const shapes = {
     return [i-10, i-11, null, null, i, i+1, null, null, null]
   },
   ou(i=4)  {
-    return [i-10, i-9, i, i+1]
+    return [null, i-10, i-9, , null, i, i+1, null, null, null]
   },
   eye(i=5)  {
-    return [i-10, i+10, i+20, i]
+    return [i-10, i, i+10, i+20]
   }
 }
 
