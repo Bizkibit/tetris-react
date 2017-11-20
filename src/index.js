@@ -38,7 +38,7 @@ class Game extends Component  {
       }],
       currentShape: Object.values(shapes)[Math.floor(Math.random()*6)],
       currentPosition: 5,
-      speed: 50
+      speed: 200
     }
   }
 
@@ -56,12 +56,14 @@ class Game extends Component  {
   renderShapes(num)  {
     let {history, currentShape} = this.state;
     let squares = history[history.length-1].squares.slice();
+    // let nodes = currentShape(num).reduce((a, b) => a.concat(b), []);
     return squares.map((k,i) => (currentShape(num).includes(i)) ? "green" : (squares[i]!=="grey") ? null : "grey");
   }
 
-  moveShape() {
+  moveShapeDown() {
     let {currentShape, currentPosition, history} = this.state;
     let squares = history[history.length-1].squares.slice();
+    
     let [a, b, c] = bottomNodes(currentShape, currentPosition);
     if (((squares[a] === null && squares[b] ===null && squares[c]===null) || (squares[a] === "grey" && squares[b] === "grey" && squares[c] === "grey")) && currentPosition<139) {
       let newPosition = currentPosition+10;
@@ -82,7 +84,7 @@ class Game extends Component  {
 
   componentDidMount() {
     this.getShape();
-    setInterval(() => this.moveShape(), this.state.speed)
+    setInterval(() => this.moveShapeDown(), this.state.speed)
   }
 
   // componentWillReceiveProps()  {
@@ -130,14 +132,16 @@ function bottomNodes(func, i) {
   // let arr = [nodes[6], nodes[3], nodes[0]];
   // let arr2 = [nodes[7], nodes[4], nodes[1]]
   // let arr2 = [nodes[8], nodes[5], nodes[2]];
-  // let node1 = arr.findIndex(bottom)===-1?null:arr.findIndex(bottom)===2?;
-  // let node2 = arr2.findIndex(bottom);
-  // let node3 = arr3.findIndex(bottom);
+  // let node1 = arr.findIndex(notNull)===-1?null:arr.findIndex(notNull)===2?;
+  // let node2 = arr2.findIndex(notNull);
+  // let node3 = arr3.findIndex(notNull);
+
+  // return func(i)[2].map((k)=>k+10)
 
   return [i+19, i+20, i+21]
 }
 
-function bottom(element) {
+function notNull(element) {
   return element !== null
 }
 
