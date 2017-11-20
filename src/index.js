@@ -4,7 +4,7 @@ import './index.css';
 import shapes from './shapes.js'
 
 function Square(props)  {
-  return (<div className="square" style={{backgroundColor:props.bgColor}}>{props.index}</div>);
+  return (<div className="square" style={{backgroundColor:props.bgColor}}></div>);
 }
 
 class Board extends Component {
@@ -56,30 +56,51 @@ class Game extends Component  {
   renderShapes(num)  {
     let {history, currentShape} = this.state;
     let squares = history[history.length-1].squares.slice();
-    // let nodes = currentShape(num).reduce((a, b) => a.concat(b), []);
-    return squares.map((k,i) => (currentShape(num).includes(i)) ? "green" : (squares[i]!=="grey") ? null : "grey");
+    let nodes = currentShape(num).reduce((a, b) => a.concat(b), []);
+    return squares.map((k,i) => (nodes.includes(i)) ? "green" : (squares[i]!=="grey") ? null : "grey");
+    // return squares.map((k,i) => (currentShape(num).includes(i)) ? "green" : (squares[i]!=="grey") ? null : "grey");
   }
 
   moveShapeDown() {
     let {currentShape, currentPosition, history} = this.state;
     let squares = history[history.length-1].squares.slice();
-    
-    let [a, b, c] = bottomNodes(currentShape, currentPosition);
-    if (((squares[a] === null && squares[b] ===null && squares[c]===null) || (squares[a] === "grey" && squares[b] === "grey" && squares[c] === "grey")) && currentPosition<139) {
-      let newPosition = currentPosition+10;
-      squares = this.renderShapes(newPosition);
-      this.setState({
-        history : history.concat([{squares:squares}]),
-        currentPosition: newPosition
-      })
-    } else {
-      currentShape(currentPosition).map((k) => squares[k]="grey");
-      this.setState({
-        history : history.concat([{squares:squares}]),
-        currentPosition: 5,
-        currentShape: Object.values(shapes)[Math.floor(Math.random()*6)]
-      })
+
+    let nodes = bottomNodes(currentShape(currentPosition));
+    let nodesOfInterest = [];
+    for (let node of nodes) {
+      nodesOfInterest.push(squares[node+10])
     }
+    if ((nodesOfInterest.filter(notGrey).length === nodesOfInterest.length) && nodes[0] < 139) {
+        let newPosition = currentPosition+10;
+        squares = this.renderShapes(newPosition);
+        this.setState({
+          history : history.concat([{squares:squares}]),
+          currentPosition: newPosition
+        })
+    } else {
+        currentShape(currentPosition).reduce((a, b) => a.concat(b), []).map((k) => squares[k]="grey");
+        this.setState({
+          history : history.concat([{squares:squares}]),
+          currentPosition: 5,
+          currentShape: Object.values(shapes)[Math.floor(Math.random()*6)]
+        })
+    }
+
+    // if (((squares[a] === null && squares[b] ===null && squares[c]===null && squares[d]===null) || (squares[a] === "grey" && squares[b] === "grey" && squares[c] === "grey" && squares[d]==="grey")) && currentPosition<135) {
+    //   let newPosition = currentPosition+10;
+    //   squares = this.renderShapes(newPosition);
+    //   this.setState({
+    //     history : history.concat([{squares:squares}]),
+    //     currentPosition: newPosition
+    //   })
+    // } else {
+    //   currentShape(currentPosition).map((k) => squares[k]="grey");
+    //   this.setState({
+    //     history : history.concat([{squares:squares}]),
+    //     currentPosition: 5,
+    //     currentShape: Object.values(shapes)[Math.floor(Math.random()*6)]
+    //   })
+    // }
   }
 
   componentDidMount() {
@@ -127,24 +148,28 @@ function rotate90(arr) {
   return result.map((k, i) => k = k?(parseInt(i/3)*10+((i%3)+first)):null )
 }
 
-function bottomNodes(func, i) {
-  // let nodes = func(i);
-  // let arr = [nodes[6], nodes[3], nodes[0]];
-  // let arr2 = [nodes[7], nodes[4], nodes[1]]
-  // let arr2 = [nodes[8], nodes[5], nodes[2]];
-  // let node1 = arr.findIndex(notNull)===-1?null:arr.findIndex(notNull)===2?;
-  // let node2 = arr2.findIndex(notNull);
-  // let node3 = arr3.findIndex(notNull);
-
-  // return func(i)[2].map((k)=>k+10)
-
-  return [i+19, i+20, i+21]
+function bottomNodes(nodes) {
+  let col1 = [nodes[3][0], nodes[2][0], nodes[1][0], nodes[0][0]];
+  let col2 = [nodes[3][1], nodes[2][1], nodes[1][1], nodes[0][1]];
+  let col3 = [nodes[3][2], nodes[2][2], nodes[1][2], nodes[0][2]];
+  let col4 = [nodes[3][3], nodes[2][3], nodes[1][3], nodes[0][3]];
+  return [col1.find(notNull), col2.find(notNull), col3.find(notNull), col4.find(notNull)].filter((el)=> el!==undefined)
+  // return result.map((el)=>el+10)
+  // for (let i = 0; i < 4, i++) {
+  //   result[i] = []
+  //   for (let k = 3; k >= 0, k--) {
+  //     result[i].push(nodes[k][i])
+  //   }
+  // }
 }
 
 function notNull(element) {
   return element !== null
 }
 
+function notGrey(element) {
+  return element !== "grey"
+}
 
 // (function movePieceTest()  {
 //   let kir;
