@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import shapes from './shapes.js';
 import Board from './Board';
-import {rotate90, bottomNodes, leftNodes, rightNodes, notGrey} from './helper.js'
+import { rotate90, bottomNodes, leftNodes, rightNodes, notGrey} from './helper.js'
 
 class Game extends Component  {
   constructor(props)  {
@@ -15,7 +15,7 @@ class Game extends Component  {
       }],
       currentShape: Object.values(shapes)[Math.floor(Math.random()*7)],
       currentPosition: 4,
-      speed: 300
+      speed: 250
     }
   }
 
@@ -23,10 +23,10 @@ class Game extends Component  {
     return (!this.state.currentShape)?Object.values(shapes)[Math.floor(Math.random()*6)]:this.state.currentShape;
   }
 
-  renderShapes(num)  {
-    let {history, currentShape} = this.state;
+  renderShapes(func, num)  {
+    let {history} = this.state;
     let squares = history[history.length-1].squares.slice();
-    let nodes = currentShape(num).reduce((a, b) => a.concat(b), []);
+    let nodes = func(num).reduce((a, b) => a.concat(b), []);
     return squares.map((k,i) => (nodes.includes(i)) ? "green" : (squares[i]!=="grey") ? null : "grey");
     // return squares.map((k,i) => (currentShape(num).includes(i)) ? "green" : (squares[i]!=="grey") ? null : "grey");
   }
@@ -42,7 +42,7 @@ class Game extends Component  {
     }
     if ((nodesOfInterest.filter(notGrey).length === nodesOfInterest.length) && nodes[0] < 139) {
         let newPosition = currentPosition+10;
-        squares = this.renderShapes(newPosition);
+        squares = this.renderShapes(this.state.currentShape, newPosition);
         this.setState({
           history : history.concat([{squares:squares}]),
           currentPosition: newPosition
@@ -61,7 +61,10 @@ class Game extends Component  {
     let {currentShape, currentPosition, history} = this.state;
     let squares = history[history.length-1].squares.slice();
     let newPosition;
+
     switch (e.keyCode) {
+
+      //right arraw
       case 39:
       squares.map((k, i) => {
         if(k==="green") {
@@ -72,7 +75,7 @@ class Game extends Component  {
             nodesOfInterest.push(squares[node+10])
           }
           if (nodesOfInterest.filter(notGrey).length === nodesOfInterest.length) {
-            squares = this.renderShapes(newPosition);
+            squares = this.renderShapes(this.state.currentShape, newPosition);
             this.setState({
               history : history.concat([{squares:squares}]),
               currentPosition: newPosition
@@ -82,6 +85,7 @@ class Game extends Component  {
       })
         break;
 
+      //left arrow
       case 37:
         squares.map((k, i) => {
           if(k==="green") {
@@ -92,7 +96,7 @@ class Game extends Component  {
               nodesOfInterest.push(squares[node+10])
             }
             if (nodesOfInterest.filter(notGrey).length === nodesOfInterest.length) {
-              squares = this.renderShapes(newPosition);
+              squares = this.renderShapes(this.state.currentShape, newPosition);
               this.setState({
                 history : history.concat([{squares:squares}]),
                 currentPosition: newPosition
@@ -102,6 +106,7 @@ class Game extends Component  {
         })
         break;
 
+      //shift key
       case 16:
           history.pop()
           this.setState({
@@ -110,10 +115,13 @@ class Game extends Component  {
           })
         break;
 
+      //up arrow
       case 38:
-          squares = this.renderShapes(currentPosition)
+          newPosition = rotate90(currentShape)(currentPosition)[1][1];
+          squares = this.renderShapes(rotate90(currentShape), newPosition);
           this.setState({
             history : history.concat([{squares:squares}]),
+            currentPosition: newPosition,
             currentShape: rotate90(currentShape)
           })
         break;
@@ -122,6 +130,7 @@ class Game extends Component  {
         return
     }
   }
+
   componentDidMount() {
     this.getShape();
     setInterval(() => this.moveShapeDown(), this.state.speed)
@@ -129,7 +138,7 @@ class Game extends Component  {
 
   componentWillMount()  {
     let {history} = this.state;
-    let squares = this.renderShapes(this.state.currentPosition);
+    let squares = this.renderShapes(this.state.currentShape, this.state.currentPosition);
     this.setState({
       history : history.concat([{squares:squares}])
     });

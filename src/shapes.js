@@ -3,7 +3,7 @@ const shapes = {
     return [[null, i-10, null, null], [i-1, i, i+1, null], [null, null, null, null], [null, null, null, null]]
   },
   es(i=4) {
-    return [[null, i, i+1, null], [i+9, i+10, null, null], [null, null, null, null], [null, null, null, null]]
+    return [[null, i-10, i-9, null], [i-1, i, null, null], [null, null, null, null], [null, null, null, null]]
   },
   jay(i=5)  {
     return [[null, i-10, null, null], [null, i, null, null], [i+9, i+10, null, null], [null, null, null, null]]
