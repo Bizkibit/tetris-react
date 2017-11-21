@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import shapes from './shapes.js';
 import Board from './Board';
+import {rotate90, bottomNodes, leftNodes, rightNodes, notGrey} from './helper.js'
 
 class Game extends Component  {
   constructor(props)  {
@@ -14,7 +15,7 @@ class Game extends Component  {
       }],
       currentShape: Object.values(shapes)[Math.floor(Math.random()*7)],
       currentPosition: 4,
-      speed: 100
+      speed: 300
     }
   }
 
@@ -54,22 +55,6 @@ class Game extends Component  {
           currentShape: Object.values(shapes)[Math.floor(Math.random()*7)]
         })
     }
-
-    // if (((squares[a] === null && squares[b] ===null && squares[c]===null && squares[d]===null) || (squares[a] === "grey" && squares[b] === "grey" && squares[c] === "grey" && squares[d]==="grey")) && currentPosition<135) {
-    //   let newPosition = currentPosition+10;
-    //   squares = this.renderShapes(newPosition);
-    //   this.setState({
-    //     history : history.concat([{squares:squares}]),
-    //     currentPosition: newPosition
-    //   })
-    // } else {
-    //   currentShape(currentPosition).map((k) => squares[k]="grey");
-    //   this.setState({
-    //     history : history.concat([{squares:squares}]),
-    //     currentPosition: 5,
-    //     currentShape: Object.values(shapes)[Math.floor(Math.random()*6)]
-    //   })
-    // }
   }
 
   handleKey(e) {
@@ -118,11 +103,19 @@ class Game extends Component  {
         break;
 
       case 16:
-            history.pop()
-            this.setState({
-              history : history,
-              currentPosition: currentShape-10
-            })
+          history.pop()
+          this.setState({
+            history : history,
+            currentPosition: currentShape-10
+          })
+        break;
+
+      case 38:
+          squares = this.renderShapes(currentPosition)
+          this.setState({
+            history : history.concat([{squares:squares}]),
+            currentShape: rotate90(currentShape)
+          })
         break;
 
       default:
@@ -151,52 +144,3 @@ class Game extends Component  {
 }
 
 ReactDOM.render(<Game/>, document.getElementById('root'));
-
-
-//helper functions
-//
-// function rotate(arr) {
-//   let result = Array(9).fill(null);
-//   let first = arr[4]-11;
-//   [result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7], result[8]] = [arr[6], arr[3], arr[0], arr[7], arr[4], arr[1], arr[8], arr[5], arr[2]];
-//   return result.map((k, i) => k = k?(parseInt(i/3)*10+((i%3)+first)):null )
-// }
-
-function rotate(arr) {
-  let result = Array(9).fill(null);
-  let first = arr[4]-11;
-  [result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7], result[8]] = [arr[6], arr[3], arr[0], arr[7], arr[4], arr[1], arr[8], arr[5], arr[2]];
-  return result.map((k, i) => k = k?(parseInt(i/3)*10+((i%3)+first)):null )
-}
-
-function bottomNodes(nodes) {
-  let col1 = [nodes[3][0], nodes[2][0], nodes[1][0], nodes[0][0]];
-  let col2 = [nodes[3][1], nodes[2][1], nodes[1][1], nodes[0][1]];
-  let col3 = [nodes[3][2], nodes[2][2], nodes[1][2], nodes[0][2]];
-  let col4 = [nodes[3][3], nodes[2][3], nodes[1][3], nodes[0][3]];
-  return [col1, col2, col3, col4].map(e => e.find(notNull)).filter(notUndefined)
-}
-
-function leftNodes(nodes) {
-  return nodes.map(e => e.find(notNull)).filter(notUndefined)
-}
-
-function rightNodes(nodes)  {
-  let row1 = nodes[0].reverse();
-  let row2 = nodes[1].reverse();
-  let row3 = nodes[2].reverse();
-  let row4 = nodes[3].reverse();
-  return [row1, row2, row3, row4].map(e => e.find(notNull)).filter(notUndefined)
-}
-
-function notNull(element) {
-  return element !== null
-}
-
-function notUndefined(element)  {
-  return element !== undefined
-}
-
-function notGrey(element) {
-  return element !== "grey"
-}

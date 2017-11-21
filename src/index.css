@@ -2,6 +2,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+  background-image: url(https://wallpaperlayer.com/img/2015/10/pattern-wallpaper-1239-1364-hd-wallpapers.jpg);
 }
 
 #Board  {
@@ -11,7 +12,7 @@ body {
   height: 75vmin;
   width: 50vmin;
   flex-wrap: wrap;
-  border: solid 2px black;
+  border: solid 3px black;
 }
 
 #Board:focus  {
@@ -24,4 +25,17 @@ body {
   border: solid 0.1px black;
   box-sizing: border-box;
   text-align: center;
+  background-color: #e2d9a1;
+}
+
+.full {
+  background-color: green;
+  border: solid 0.1px black;
+}
+
+h1  {
+  text-align: center;
+  margin-top: 5vmin;
+  color: #e2d9a1;
+  text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em black;
 }
