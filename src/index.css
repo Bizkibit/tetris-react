@@ -48,7 +48,7 @@ h1  {
 }
 
 .controller:first-child, .controller:last-child {
-  width: 20vmin
+  width: 30vmin
 }
 
 .left-right {
@@ -57,7 +57,7 @@ h1  {
 }
 
 .left-right * {
-  width: 10vmin;
+  width: 15vmin;
   box-sizing: border-box;
 }
 
