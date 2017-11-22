@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import shapes from './shapes.js';
 import Board from './Board';
-import { rotate90, bottomNodes, leftNodes, rightNodes, notGrey} from './helper.js'
+import { rotate90, bottomNodes, leftNodes, rightNodes, notGrey, biggerthan} from './helper.js'
 
 class Game extends Component  {
   constructor(props)  {
     super(props);
     this.handleKey = this.handleKey.bind(this);
-    this.moveHorizontaly = this.moveHorizontaly.bind(this);
+    this.movePiece = this.movePiece.bind(this);
     this.state = {
       history: [{
         squares: new Array(150).fill(null)
@@ -29,33 +29,33 @@ class Game extends Component  {
     let squares = history[history.length-1].squares.slice();
     let nodes = func(num).reduce((a, b) => a.concat(b), []);
     return squares.map((k,i) => (nodes.includes(i)) ? "green" : (squares[i]!=="grey") ? null : "grey");
-    // return squares.map((k,i) => (currentShape(num).includes(i)) ? "green" : (squares[i]!=="grey") ? null : "grey");
   }
 
   moveShapeDown() {
+    if (this.movePiece(10)) {
+    } else {
+      this.landShape();
+    }
+  }
+
+  movePiece(i) {
     let {currentShape, currentPosition, history} = this.state;
     let squares = history[history.length-1].squares.slice();
-
-    let nodes = bottomNodes(currentShape(currentPosition));
+    let nodes = (i===1)?rightNodes(currentShape(currentPosition)) : (i===10)? bottomNodes(currentShape(currentPosition)) : leftNodes(currentShape(currentPosition));
     let nodesOfInterest = [];
     for (let node of nodes) {
-      nodesOfInterest.push(squares[node+10])
+      nodesOfInterest.push(squares[node+i])
     }
-    if ((nodesOfInterest.filter(notGrey).length === nodesOfInterest.length) && nodes[0] < 139) {
-        let newPosition = currentPosition+10;
-        squares = this.renderShapes(this.state.currentShape, newPosition);
-        this.setState({
-          history : history.concat([{squares:squares}]),
-          currentPosition: newPosition
-        })
+    if ((nodesOfInterest.filter(notGrey).length === nodesOfInterest.length) && nodes.every(biggerthan)) {
+      let newPosition = this.state.currentPosition + i;
+      squares = this.renderShapes(this.state.currentShape, newPosition);
+      this.setState({
+        history : history.concat([{squares:squares}]),
+        currentPosition: newPosition
+      })
+      return true
     } else {
-        // currentShape(currentPosition).reduce((a, b) => a.concat(b), []).map((k) => squares[k]="grey");
-        // this.setState({
-        //   history : history.concat([{squares:squares}]),
-        //   currentPosition: 5,
-        //   currentShape: Object.values(shapes)[Math.floor(Math.random()*7)]
-        // })
-        this.landShape();
+      return false
     }
   }
 
@@ -70,24 +70,6 @@ class Game extends Component  {
     })
   }
 
-  moveHorizontaly(i) {
-    let {currentShape, currentPosition, history} = this.state;
-    let squares = history[history.length-1].squares.slice();
-    let newPosition = this.state.currentPosition + i;
-    let nodes = (i===1)?rightNodes(currentShape(currentPosition)):leftNodes(currentShape(currentPosition));
-    let nodesOfInterest = [];
-    for (let node of nodes) {
-      nodesOfInterest.push(squares[node+i])
-    }
-    if (nodesOfInterest.filter(notGrey).length === nodesOfInterest.length) {
-      squares = this.renderShapes(this.state.currentShape, newPosition);
-      this.setState({
-        history : history.concat([{squares:squares}]),
-        currentPosition: newPosition
-      })
-    }
-  }
-
 
   handleKey(e) {
     let {currentShape, currentPosition, history} = this.state;
@@ -98,12 +80,12 @@ class Game extends Component  {
 
       //right arraw
       case 39:
-          this.moveHorizontaly(1);
+          this.movePiece(1);
         break;
 
       //left arrow
       case 37:
-          this.moveHorizontaly(-1);
+          this.movePiece(-1);
         break;
 
       //shift key

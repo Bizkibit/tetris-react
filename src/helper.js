@@ -39,3 +39,7 @@ function notUndefined(element)  {
 export function notGrey(element) {
   return element !== "grey"
 }
+
+export function biggerthan(element) {
+  return element <= 139
+}
