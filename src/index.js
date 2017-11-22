@@ -9,8 +9,10 @@ class Game extends Component  {
   constructor(props)  {
     super(props);
     this.handleKey = this.handleKey.bind(this);
+    this.canPieceMove = this.canPieceMove.bind(this);
     this.movePiece = this.movePiece.bind(this);
     this.startGame = this.startGame.bind(this);
+    this.gameOver = this.gameOver.bind(this);
     this.state = {
       history: [{
         squares: new Array(150).fill(null)
@@ -34,13 +36,15 @@ class Game extends Component  {
   }
 
   moveShapeDown() {
-    if (this.movePiece(10)) {
+    if (this.canPieceMove(10)) {
+      this.movePiece(10)
     } else {
       this.landPiece();
     }
   }
 
-  movePiece(i) {
+  // i = 1 for right movement, i = -1 for left movement, i = 10 for downwards.
+  canPieceMove(i)  {
     let {currentShape, currentPosition, history} = this.state;
     let squares = history[history.length-1].squares.slice();
     let nodes = (i===1)?rightNodes(currentShape(currentPosition)) : (i===10)? bottomNodes(currentShape(currentPosition)) : leftNodes(currentShape(currentPosition));
@@ -48,16 +52,19 @@ class Game extends Component  {
     for (let node of nodes) {
       nodesOfInterest.push(squares[node+i])
     }
-    if ((nodesOfInterest.filter(notGrey).length === nodesOfInterest.length) && nodes.every(biggerthan)) {
+    return (nodesOfInterest.filter(notGrey).length === nodesOfInterest.length) && nodes.every(biggerthan)
+  }
+
+  movePiece(i) {
+    let {history} = this.state;
+    let squares = history[history.length-1].squares.slice();
+    if (this.canPieceMove(i)) {
       let newPosition = this.state.currentPosition + i;
       squares = this.renderShapes(this.state.currentShape, newPosition);
       this.setState({
         history : history.concat([{squares:squares}]),
         currentPosition: newPosition
       })
-      return true
-    } else {
-      return false
     }
   }
 
@@ -90,7 +97,7 @@ class Game extends Component  {
           this.movePiece(-1);
         break;
 
-      //shift key
+      //shift key rewind key
       case e.keyCode===16||e.currentTarget.id==="RW":
             history.pop()
             this.setState({
@@ -130,14 +137,46 @@ class Game extends Component  {
 
   startGame() {
     this.getShape();
-    let iD = setInterval(() => this.moveShapeDown(), this.state.speed);
+    if(this.gameOver()){
+      return;
+    }
+    let iD = setInterval(() => {(this.gameOver())? ()=>{} : this.moveShapeDown()}, this.state.speed);
     this.setState({
       currentRunID: iD
     });
   }
 
-  componentDidMount() {
+  gameOver()  {
+    if ( !this.canPieceMove(10) && this.state.currentPosition===5) {
+      alert("Game Over!");
+      let answer = window.confirm("try Again?");
+      console.log(answer);
+      clearInterval(this.state.currentRunID);
+      if (answer) {
+        this.setState({
+          history: [{
+            squares: new Array(150).fill(null)
+          }],
+          currentShape: Object.values(shapes)[Math.floor(Math.random()*7)],
+          currentPosition: 4,
+          speed: 250,
+          currentRunID: null
+        });
 
+          this.startGame()
+
+      } else {
+        this.setState({
+          currentRunID: null
+        });
+      }
+      return true
+    } else {
+      return false
+    }
+  }
+
+  componentDidMount() {
     this.startGame();
   }
 
