@@ -28,11 +28,6 @@ body {
   background-color: #e2d9a1;
 }
 
-.full {
-  background-color: green;
-  border: solid 0.1px black;
-}
-
 h1  {
   text-align: center;
   margin-top: 5vmin;
@@ -41,16 +36,15 @@ h1  {
 }
 
 .controller {
-  width: 30vmin;
-  margin: 10vmin auto ;
+  margin: 10vmin auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
 }
 
 .controller * {
   background-color: black;
   color: #e2d9a1;
+  box-sizing: border-box;
 }
 
 .controller:first-child, .controller:last-child {
@@ -62,10 +56,16 @@ h1  {
   justify-content: space-between;
 }
 
-.left-right > * {
+.left-right * {
   width: 10vmin;
+  box-sizing: border-box;
 }
 
 button {
 outline: none;
+padding: 0;
+}
+
+.fa {
+  display: inline;
 }
