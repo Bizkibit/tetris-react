@@ -34,7 +34,7 @@ class Game extends Component  {
   moveShapeDown() {
     if (this.movePiece(10)) {
     } else {
-      this.landShape();
+      this.landPiece();
     }
   }
 
@@ -59,7 +59,7 @@ class Game extends Component  {
     }
   }
 
-  landShape() {
+  landPiece() {
     let {currentShape, currentPosition, history} = this.state;
     let squares = history[history.length-1].squares.slice();
     currentShape(currentPosition).reduce((a, b) => a.concat(b), []).map((k) => squares[k]="grey");
@@ -76,29 +76,29 @@ class Game extends Component  {
     let squares = history[history.length-1].squares.slice();
     let newPosition;
 
-    switch (e.keyCode) {
+    switch (true) {
 
       //right arraw
-      case 39:
+      case e.keyCode===39||e.currentTarget.id==="R":
           this.movePiece(1);
         break;
 
       //left arrow
-      case 37:
+      case e.keyCode===37||e.currentTarget.id==="L":
           this.movePiece(-1);
         break;
 
       //shift key
-      case 16:
-          history.pop()
-          this.setState({
-            history : history,
-            currentPosition: currentPosition-10
-          })
+      case e.keyCode===16||e.currentTarget.id==="RW":
+            history.pop()
+            this.setState({
+              history : history,
+              currentPosition: currentPosition-10
+            })
         break;
 
       //up arrow
-      case 38:
+      case e.keyCode===38||e.currentTarget.id==="U":
           newPosition = rotate90(currentShape)(currentPosition)[1][1];
           squares = this.renderShapes(rotate90(currentShape), newPosition);
           this.setState({
@@ -129,7 +129,25 @@ class Game extends Component  {
   render()  {
     let {squares} = this.state.history[this.state.history.length-1];
     return (
-      <Board squares={squares} onKeyDown={this.handleKey}/>
+      <div>
+        <Board squares={squares} onKeyDown={this.handleKey}/>
+        <div className="controller">
+          <button type="button" onClick={this.handleKey} id="U">
+            <i class="fa fa-arrow-circle-up fa-3x" aria-hidden="true"></i>
+          </button>
+          <div className="left-right">
+            <button type="button"  onClick={this.handleKey} id="L">
+              <i class="fa fa-arrow-circle-left fa-3x" aria-hidden="true"></i>
+            </button>
+            <button type="button" onClick={this.handleKey} id="R">
+              <i class="fa fa-arrow-circle-right fa-3x" aria-hidden="true"></i>
+            </button>
+          </div>
+          <button type="button" id="RW" onClick={this.handleKey}>
+            <i class="fa fa-step-backward fa-3x" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
     )
   }
 }

@@ -39,3 +39,33 @@ h1  {
   color: #e2d9a1;
   text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em black;
 }
+
+.controller {
+  width: 30vmin;
+  margin: 10vmin auto ;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.controller * {
+  background-color: black;
+  color: #e2d9a1;
+}
+
+.controller:first-child, .controller:last-child {
+  width: 20vmin
+}
+
+.left-right {
+  display: flex;
+  justify-content: space-between;
+}
+
+.left-right > * {
+  width: 10vmin;
+}
+
+button {
+outline: none;
+}
