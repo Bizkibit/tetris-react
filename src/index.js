@@ -9,6 +9,7 @@ class Game extends Component  {
   constructor(props)  {
     super(props);
     this.handleKey = this.handleKey.bind(this);
+    this.moveHorizontaly = this.moveHorizontaly.bind(this);
     this.state = {
       history: [{
         squares: new Array(150).fill(null)
@@ -48,14 +49,45 @@ class Game extends Component  {
           currentPosition: newPosition
         })
     } else {
-        currentShape(currentPosition).reduce((a, b) => a.concat(b), []).map((k) => squares[k]="grey");
-        this.setState({
-          history : history.concat([{squares:squares}]),
-          currentPosition: 5,
-          currentShape: Object.values(shapes)[Math.floor(Math.random()*7)]
-        })
+        // currentShape(currentPosition).reduce((a, b) => a.concat(b), []).map((k) => squares[k]="grey");
+        // this.setState({
+        //   history : history.concat([{squares:squares}]),
+        //   currentPosition: 5,
+        //   currentShape: Object.values(shapes)[Math.floor(Math.random()*7)]
+        // })
+        this.landShape();
     }
   }
+
+  landShape() {
+    let {currentShape, currentPosition, history} = this.state;
+    let squares = history[history.length-1].squares.slice();
+    currentShape(currentPosition).reduce((a, b) => a.concat(b), []).map((k) => squares[k]="grey");
+    this.setState({
+      history : history.concat([{squares:squares}]),
+      currentPosition: 5,
+      currentShape: Object.values(shapes)[Math.floor(Math.random()*7)]
+    })
+  }
+
+  moveHorizontaly(i) {
+    let {currentShape, currentPosition, history} = this.state;
+    let squares = history[history.length-1].squares.slice();
+    let newPosition = this.state.currentPosition + i;
+    let nodes = (i===1)?rightNodes(currentShape(currentPosition)):leftNodes(currentShape(currentPosition));
+    let nodesOfInterest = [];
+    for (let node of nodes) {
+      nodesOfInterest.push(squares[node+i])
+    }
+    if (nodesOfInterest.filter(notGrey).length === nodesOfInterest.length) {
+      squares = this.renderShapes(this.state.currentShape, newPosition);
+      this.setState({
+        history : history.concat([{squares:squares}]),
+        currentPosition: newPosition
+      })
+    }
+  }
+
 
   handleKey(e) {
     let {currentShape, currentPosition, history} = this.state;
@@ -66,44 +98,12 @@ class Game extends Component  {
 
       //right arraw
       case 39:
-      squares.map((k, i) => {
-        if(k==="green") {
-          newPosition = this.state.currentPosition+1;
-          let nodes = rightNodes(currentShape(currentPosition+1));
-          let nodesOfInterest = [];
-          for (let node of nodes) {
-            nodesOfInterest.push(squares[node+10])
-          }
-          if (nodesOfInterest.filter(notGrey).length === nodesOfInterest.length) {
-            squares = this.renderShapes(this.state.currentShape, newPosition);
-            this.setState({
-              history : history.concat([{squares:squares}]),
-              currentPosition: newPosition
-            })
-          }
-        }
-      })
+          this.moveHorizontaly(1);
         break;
 
       //left arrow
       case 37:
-        squares.map((k, i) => {
-          if(k==="green") {
-            newPosition = this.state.currentPosition-1;
-            let nodes = leftNodes(currentShape(currentPosition-1));
-            let nodesOfInterest = [];
-            for (let node of nodes) {
-              nodesOfInterest.push(squares[node+10])
-            }
-            if (nodesOfInterest.filter(notGrey).length === nodesOfInterest.length) {
-              squares = this.renderShapes(this.state.currentShape, newPosition);
-              this.setState({
-                history : history.concat([{squares:squares}]),
-                currentPosition: newPosition
-              })
-            }
-          }
-        })
+          this.moveHorizontaly(-1);
         break;
 
       //shift key
@@ -111,7 +111,7 @@ class Game extends Component  {
           history.pop()
           this.setState({
             history : history,
-            currentPosition: currentShape-10
+            currentPosition: currentPosition-10
           })
         break;
 
