@@ -10,13 +10,15 @@ class Game extends Component  {
     super(props);
     this.handleKey = this.handleKey.bind(this);
     this.movePiece = this.movePiece.bind(this);
+    this.startGame = this.startGame.bind(this);
     this.state = {
       history: [{
         squares: new Array(150).fill(null)
       }],
       currentShape: Object.values(shapes)[Math.floor(Math.random()*7)],
       currentPosition: 4,
-      speed: 250
+      speed: 250,
+      currentRunID: null
     }
   }
 
@@ -108,14 +110,35 @@ class Game extends Component  {
           })
         break;
 
+      //space bar pause button
+      case e.keyCode===32:
+          let {currentRunID} = this.state;
+          if (currentRunID) {
+            clearInterval(currentRunID);
+            this.setState({
+              currentRunID: null
+            })
+          } else {
+            this.startGame();
+          }
+        break;
+
       default:
         return
     }
   }
 
-  componentDidMount() {
+  startGame() {
     this.getShape();
-    setInterval(() => this.moveShapeDown(), this.state.speed)
+    let iD = setInterval(() => this.moveShapeDown(), this.state.speed);
+    this.setState({
+      currentRunID: iD
+    });
+  }
+
+  componentDidMount() {
+
+    this.startGame();
   }
 
   componentWillMount()  {
