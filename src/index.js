@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import shapes from './shapes.js';
 import Board from './Board';
-import { rotate90, bottomNodes, leftNodes, rightNodes, notGrey, biggerthan} from './helper.js'
+import { rotate90, bottomNodes, leftNodes, rightNodes, notGrey, biggerthan, notNull} from './helper.js'
 
 class Game extends Component  {
   constructor(props)  {
@@ -13,6 +13,7 @@ class Game extends Component  {
     this.movePiece = this.movePiece.bind(this);
     this.startGame = this.startGame.bind(this);
     this.gameOver = this.gameOver.bind(this);
+    this.clearRow = this.clearRow.bind(this);
     this.state = {
       history: [{
         squares: new Array(150).fill(null)
@@ -40,6 +41,7 @@ class Game extends Component  {
       this.movePiece(10)
     } else {
       this.landPiece();
+      this.clearRow();
     }
   }
 
@@ -77,6 +79,28 @@ class Game extends Component  {
       currentPosition: 5,
       currentShape: Object.values(shapes)[Math.floor(Math.random()*7)]
     })
+  }
+
+  clearRow()  {
+    let {history} = this.state;
+    let squares = history[history.length-1].squares.slice();
+    let rows=[], length;
+    for (let i = 0; i < 15; i++)  {
+      if (!squares.slice(i*10, (i+1)*10).every(notNull)) {
+        rows.push(squares.slice(i*10, (i+1)*10))
+      }
+    }
+    length= rows.length;
+    if (length===15) {
+      return
+    } else {
+      for(let i = 0; i < (15-length); i++)  {
+        rows.unshift(Array(10).fill(null));
+      }
+      this.setState({
+        history : history.concat([{squares:rows.reduce((a, b) => a.concat(b), [])}])
+      })
+    }
   }
 
 
@@ -150,7 +174,6 @@ class Game extends Component  {
     if ( !this.canPieceMove(10) && this.state.currentPosition===5) {
       alert("Game Over!");
       let answer = window.confirm("try Again?");
-      console.log(answer);
       clearInterval(this.state.currentRunID);
       if (answer) {
         this.setState({
@@ -162,9 +185,7 @@ class Game extends Component  {
           speed: 250,
           currentRunID: null
         });
-
           this.startGame()
-
       } else {
         this.setState({
           currentRunID: null

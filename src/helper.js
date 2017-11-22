@@ -28,7 +28,7 @@ export function rightNodes(nodes)  {
   return [row1, row2, row3, row4].map(e => e.find(notNull)).filter(notUndefined)
 }
 
-function notNull(element) {
+export function notNull(element) {
   return element !== null
 }
 
